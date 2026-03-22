@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 // Importar rutas
@@ -17,6 +18,9 @@ app.use(express.json());
 
 // Parser de URL-encoded
 app.use(express.urlencoded({ extended: true }));
+
+// Archivos estaticos de imagenes subidas
+app.use('/uploads', express.static(path.resolve(__dirname, '..', 'uploads')));
 
 
 // Ruta de prueba
@@ -36,6 +40,15 @@ app.get('/', (req, res) => {
 app.use('/api/lotes', loteRoutes);
 app.use('/api/gastos', costoRoutes);
 app.use('/api/productos', productoRoutes);
+
+app.use((error, req, res, next) => {
+    if (!error) return next();
+    console.error('Error no controlado en API:', error);
+    return res.status(400).json({
+        success: false,
+        message: error.message || 'Error en la solicitud',
+    });
+});
 
 
 

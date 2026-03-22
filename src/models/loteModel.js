@@ -123,7 +123,10 @@ const LoteModel = {
             fecha_cosecha_est,
             rendimiento_estimado,
             precio_venta_est,
-            estado
+            estado,
+            foto_siembra_url,
+            ubicacion,
+            variedad
         } = loteData;
 
         const query = `
@@ -135,8 +138,11 @@ const LoteModel = {
                 fecha_cosecha_est = $4,
                 rendimiento_estimado = $5,
                 precio_venta_est = $6,
-                estado = $7
-            WHERE id_lote = $8
+                estado = $7,
+                foto_siembra_url = $8,
+                ubicacion = $9,
+                variedad = $10
+            WHERE id_lote = $11
             RETURNING *
         `;
 
@@ -148,6 +154,9 @@ const LoteModel = {
             rendimiento_estimado,
             precio_venta_est,
             estado,
+            foto_siembra_url || null,
+            ubicacion || null,
+            variedad || null,
             id
         ];
 
@@ -185,6 +194,36 @@ const LoteModel = {
             ORDER BY l.created_at DESC
         `;
         const result = await pool.query(query, [idProductor]);
+        return result.rows;
+    },
+
+    // Obtener lotes por producto
+    getByProducto: async (idProducto) => {
+        const query = `
+            SELECT 
+                l.id_lote,
+                l.id_productor,
+                l.id_producto,
+                p.nombre AS nombre_producto,
+                p.categoria,
+                l.nombre_lote,
+                l.superficie,
+                l.fecha_siembra,
+                l.fecha_cosecha_est,
+                l.rendimiento_estimado,
+                l.precio_venta_est,
+                l.foto_siembra_url,
+                l.foto_cosecha_url,
+                l.ubicacion,
+                l.variedad,
+                l.estado,
+                l.created_at
+            FROM lote l
+            INNER JOIN producto p ON l.id_producto = p.id_producto
+            WHERE l.id_producto = $1
+            ORDER BY l.created_at DESC
+        `;
+        const result = await pool.query(query, [idProducto]);
         return result.rows;
     }
 };

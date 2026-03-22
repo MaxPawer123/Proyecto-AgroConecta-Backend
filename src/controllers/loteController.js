@@ -1,6 +1,39 @@
 const LoteModel = require('../models/loteModel');
 //CONTRORLES DE LOTES 
 const LoteController = {
+    uploadSiembraPhoto: async (req, res) => {
+        try {
+            if (!req.file) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'No se recibio ninguna imagen en el campo foto.'
+                });
+            }
+
+            const host = req.get('host');
+            const protocolo = req.protocol;
+            const rutaPublica = `/uploads/lotes/${req.file.filename}`;
+            const urlPublica = `${protocolo}://${host}${rutaPublica}`;
+
+            return res.status(201).json({
+                success: true,
+                message: 'Imagen subida correctamente',
+                data: {
+                    url: urlPublica,
+                    filename: req.file.filename,
+                    path: rutaPublica,
+                },
+            });
+        } catch (error) {
+            console.error('Error al subir foto de siembra:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Error al subir la foto de siembra',
+                error: error.message,
+            });
+        }
+    },
+
     // Obtener todos los lotes
     getAllLotes: async (req, res) => {
         try {
@@ -114,7 +147,20 @@ const LoteController = {
                 });
             }
 
-            const loteActualizado = await LoteModel.update(id, req.body);
+            const datosActualizados = {
+                nombre_lote: req.body.nombre_lote ?? loteExistente.nombre_lote,
+                superficie: req.body.superficie ?? loteExistente.superficie,
+                fecha_siembra: req.body.fecha_siembra ?? loteExistente.fecha_siembra,
+                fecha_cosecha_est: req.body.fecha_cosecha_est ?? loteExistente.fecha_cosecha_est,
+                rendimiento_estimado: req.body.rendimiento_estimado ?? loteExistente.rendimiento_estimado,
+                precio_venta_est: req.body.precio_venta_est ?? loteExistente.precio_venta_est,
+                estado: req.body.estado ?? loteExistente.estado,
+                foto_siembra_url: req.body.foto_siembra_url ?? loteExistente.foto_siembra_url,
+                ubicacion: req.body.ubicacion ?? loteExistente.ubicacion,
+                variedad: req.body.variedad ?? loteExistente.variedad,
+            };
+
+            const loteActualizado = await LoteModel.update(id, datosActualizados);
 
             res.status(200).json({
                 success: true,
@@ -176,6 +222,27 @@ const LoteController = {
             res.status(500).json({
                 success: false,
                 message: 'Error al obtener los lotes del productor',
+                error: error.message
+            });
+        }
+    },
+
+    // Obtener lotes por producto
+    getLotesByProducto: async (req, res) => {
+        try {
+            const { idProducto } = req.params;
+            const lotes = await LoteModel.getByProducto(idProducto);
+
+            res.status(200).json({
+                success: true,
+                data: lotes,
+                count: lotes.length
+            });
+        } catch (error) {
+            console.error('Error al obtener lotes por producto:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Error al obtener los lotes por producto',
                 error: error.message
             });
         }
