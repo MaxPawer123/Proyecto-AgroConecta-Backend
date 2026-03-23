@@ -7,6 +7,7 @@ require('dotenv').config();
 const loteRoutes = require('./routes/loteRoutes');
 const costoRoutes = require('./routes/costoRoutes');
 const productoRoutes = require('./routes/productoRoutes');
+const produccionRoutes = require('./routes/produccionRoutes');
 
 const app = express();
 
@@ -31,7 +32,8 @@ app.get('/', (req, res) => {
         endpoints: {
             lotes: '/api/lotes',
             gastos: '/api/gastos',
-            productos: '/api/productos'
+            productos: '/api/productos',
+            produccion: '/api/produccion'
         }
     });
 });
@@ -40,6 +42,7 @@ app.get('/', (req, res) => {
 app.use('/api/lotes', loteRoutes);
 app.use('/api/gastos', costoRoutes);
 app.use('/api/productos', productoRoutes);
+app.use('/api/produccion', produccionRoutes);
 
 app.use((error, req, res, next) => {
     if (!error) return next();

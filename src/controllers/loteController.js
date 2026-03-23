@@ -1,4 +1,5 @@
 const LoteModel = require('../models/loteModel');
+const ProduccionModel = require('../models/produccionModel');
 //CONTRORLES DE LOTES 
 const LoteController = {
     uploadSiembraPhoto: async (req, res) => {
@@ -173,6 +174,52 @@ const LoteController = {
                 success: false,
                 message: 'Error al actualizar el lote',
                 error: error.message
+            });
+        }
+    },
+
+    updateProduccionLote: async (req, res) => {
+        try {
+            const { id } = req.params;
+            const rendimiento = Number(req.body.rendimiento_estimado);
+            const precio = Number(req.body.precio_venta_est);
+            const fechaRegistro = req.body.fecha_registro || new Date().toISOString().split('T')[0];
+
+            if (!rendimiento || rendimiento <= 0 || !precio || precio <= 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'rendimiento_estimado y precio_venta_est deben ser mayores a cero'
+                });
+            }
+
+            const loteExistente = await LoteModel.getById(id);
+            if (!loteExistente) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Lote no encontrado'
+                });
+            }
+
+            const resultado = await ProduccionModel.createAndSyncLote({
+                id_lote: Number(id),
+                fecha_registro: fechaRegistro,
+                cantidad_obtenida: rendimiento,
+                precio_venta: precio,
+                estado_sincronizacion: req.body.estado_sincronizacion,
+            });
+
+            return res.status(200).json({
+                success: true,
+                message: 'Datos de produccion actualizados correctamente',
+                data: resultado.lote,
+                produccion: resultado.produccion,
+            });
+        } catch (error) {
+            console.error('Error al actualizar datos de produccion:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Error al actualizar datos de produccion',
+                error: error.message,
             });
         }
     },

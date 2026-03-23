@@ -164,6 +164,20 @@ const LoteModel = {
         return result.rows[0];
     },
 
+    updateProduccion: async (id, rendimientoEstimado, precioVentaEst) => {
+        const query = `
+            UPDATE lote
+            SET
+                rendimiento_estimado = $1,
+                precio_venta_est = $2
+            WHERE id_lote = $3
+            RETURNING *
+        `;
+
+        const result = await pool.query(query, [rendimientoEstimado, precioVentaEst, id]);
+        return result.rows[0];
+    },
+
     // Eliminar un lote
     delete: async (id) => {
         const query = 'DELETE FROM lote WHERE id_lote = $1 RETURNING *';

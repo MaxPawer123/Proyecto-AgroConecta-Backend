@@ -28,6 +28,9 @@ router.post('/upload/siembra', uploadFotoSiembra.single('foto'), LoteController.
 // PUT /api/lotes/:id - Actualizar un lote
 router.put('/:id', LoteController.updateLote);
 
+// PUT /api/lotes/:id/produccion - Actualizar datos de produccion del lote
+router.put('/:id/produccion', LoteController.updateProduccionLote);
+
 // DELETE /api/lotes/:id - Eliminar un lote
 router.delete('/:id', LoteController.deleteLote);
 
