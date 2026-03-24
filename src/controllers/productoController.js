@@ -65,7 +65,7 @@ const ProductoController = {
             }
 
             // Validar categoría
-            const categoriasValidas = ['Grano', 'Tuberculo', 'Hortaliza', 'Forraje'];
+            const categoriasValidas = ['Quinua', 'Hortalizas', 'Grano', 'Tuberculo', 'Hortaliza', 'Forraje'];
             if (!categoriasValidas.includes(categoria)) {
                 return res.status(400).json({
                     success: false,

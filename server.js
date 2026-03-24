@@ -86,6 +86,31 @@ async function ensureLoteColumns() {
     }
 }
 
+async function ensureProductoCategoriaConstraint() {
+    try {
+        await pool.query(`
+            DO $$
+            BEGIN
+                IF EXISTS (
+                    SELECT 1
+                    FROM information_schema.table_constraints
+                    WHERE table_name = 'producto'
+                      AND constraint_name = 'producto_categoria_check'
+                ) THEN
+                    ALTER TABLE producto DROP CONSTRAINT producto_categoria_check;
+                END IF;
+
+                ALTER TABLE producto
+                ADD CONSTRAINT producto_categoria_check
+                CHECK (categoria IN ('Grano', 'Tuberculo', 'Hortaliza', 'Forraje', 'Quinua', 'Hortalizas'));
+            END $$;
+        `);
+        console.log('✅ Constraint producto_categoria_check verificado (incluye Quinua y Hortalizas)');
+    } catch (error) {
+        console.error('⚠️ No se pudo verificar constraint de categoría en producto:', error.message);
+    }
+}
+
 // Iniciar el servidor
 app.listen(PORT, HOST, () => {
     const ipLan = obtenerIpLan();
@@ -93,6 +118,7 @@ app.listen(PORT, HOST, () => {
     console.log(`📍 http://localhost:${PORT}`);
     console.log(`📱 LAN móvil: http://${ipLan}:${PORT}`);
     ensureLoteColumns();
+    ensureProductoCategoriaConstraint();
 });
 
 // Manejo de cierre graceful

@@ -180,9 +180,22 @@ const LoteModel = {
 
     // Eliminar un lote
     delete: async (id) => {
-        const query = 'DELETE FROM lote WHERE id_lote = $1 RETURNING *';
-        const result = await pool.query(query, [id]);
-        return result.rows[0];
+        const client = await pool.connect();
+        try {
+            await client.query('BEGIN');
+
+            await client.query('DELETE FROM produccion_lote WHERE id_lote = $1', [id]);
+
+            const result = await client.query('DELETE FROM lote WHERE id_lote = $1 RETURNING *', [id]);
+
+            await client.query('COMMIT');
+            return result.rows[0];
+        } catch (error) {
+            await client.query('ROLLBACK');
+            throw error;
+        } finally {
+            client.release();
+        }
     },
 
     // Obtener lotes por productor

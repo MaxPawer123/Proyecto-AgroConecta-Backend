@@ -11,9 +11,7 @@ const ProductoModel = {
             SELECT 
                 id_producto,
                 nombre,
-                categoria,
-                unidad_medida_base,
-                imagen_url
+                categoria
             FROM producto
             ORDER BY nombre ASC
         `;
@@ -27,9 +25,7 @@ const ProductoModel = {
             SELECT 
                 id_producto,
                 nombre,
-                categoria,
-                unidad_medida_base,
-                imagen_url
+                categoria
             FROM producto
             WHERE id_producto = $1
         `;
@@ -41,26 +37,20 @@ const ProductoModel = {
     create: async (productoData) => {
         const {
             nombre,
-            categoria,
-            unidad_medida_base,
-            imagen_url
+            categoria
         } = productoData;
 
         const query = `
             INSERT INTO producto (
                 nombre,
-                categoria,
-                unidad_medida_base,
-                imagen_url
-            ) VALUES ($1, $2, $3, $4)
+                categoria
+            ) VALUES ($1, $2)
             RETURNING *
         `;
 
         const values = [
             nombre,
             categoria,
-            unidad_medida_base || 'Kg',
-            imagen_url || null
         ];
 
         const result = await pool.query(query, values);
@@ -71,28 +61,22 @@ const ProductoModel = {
     update: async (id, productoData) => {
         const {
             nombre,
-            categoria,
-            unidad_medida_base,
-            imagen_url
+            categoria
         } = productoData;
 
         const query = `
             UPDATE producto 
             SET 
                 nombre = $1,
-                categoria = $2,
-                unidad_medida_base = $3,
-                imagen_url = $4
-            WHERE id_producto = $5
+                categoria = $2
+            WHERE id_producto = $3
             RETURNING *
         `;
 
         const values = [
             nombre,
             categoria,
-            unidad_medida_base,
-            imagen_url,
-            id
+            id,
         ];
 
         const result = await pool.query(query, values);
@@ -112,11 +96,9 @@ const ProductoModel = {
             SELECT 
                 id_producto,
                 nombre,
-                categoria,
-                unidad_medida_base,
-                imagen_url
+                categoria
             FROM producto
-            WHERE categoria = $1
+            WHERE LOWER(categoria) = LOWER($1)
             ORDER BY nombre ASC
         `;
         const result = await pool.query(query, [categoria]);
@@ -130,12 +112,11 @@ const ProductoModel = {
                 p.id_producto,
                 p.nombre,
                 p.categoria,
-                p.unidad_medida_base,
                 COUNT(l.id_lote) as total_lotes,
                 SUM(l.superficie) as superficie_total
             FROM producto p
             LEFT JOIN lote l ON p.id_producto = l.id_producto
-            GROUP BY p.id_producto, p.nombre, p.categoria, p.unidad_medida_base
+            GROUP BY p.id_producto, p.nombre, p.categoria
             ORDER BY total_lotes DESC, p.nombre ASC
         `;
         const result = await pool.query(query);

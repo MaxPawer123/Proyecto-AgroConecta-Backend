@@ -9,6 +9,9 @@ router.get('/', ProductoController.getAllProductos);
 // GET /api/productos/stats - Obtener productos con estadísticas de uso
 router.get('/stats', ProductoController.getProductosConEstadisticas);
 
+// GET /api/productos/categoria/:categoria - Obtener productos por categoría
+router.get('/categoria/:categoria', ProductoController.getProductosByCategoria);
+
 // GET /api/productos/:id - Obtener un producto por ID
 router.get('/:id', ProductoController.getProductoById);
 
@@ -20,8 +23,5 @@ router.put('/:id', ProductoController.updateProducto);
 
 // DELETE /api/productos/:id - Eliminar un producto
 router.delete('/:id', ProductoController.deleteProducto);
-
-// GET /api/productos/categoria/:categoria - Obtener productos por categoría
-router.get('/categoria/:categoria', ProductoController.getProductosByCategoria);
 
 module.exports = router;

@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS productor (
 CREATE TABLE IF NOT EXISTS producto (
     id_producto SERIAL PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL, -- Ej: Quinua Real
-    categoria VARCHAR(50) CHECK (categoria IN ('Grano', 'Tuberculo', 'Hortaliza', 'Forraje')),
+    categoria VARCHAR(50) CHECK (categoria IN ('Grano', 'Tuberculo', 'Hortaliza', 'Forraje', 'Quinua', 'Hortalizas')),
     unidad_medida_base VARCHAR(20) DEFAULT 'Kg', -- Para facilitar cálculos
     imagen_url VARCHAR(255) -- Ruta de la foto genérica
 );
@@ -77,6 +77,20 @@ CREATE TABLE IF NOT EXISTS gasto_lote (
     fecha_gasto DATE DEFAULT CURRENT_DATE
 );
 
+CREATE TABLE produccion_lote (
+    id_produccion SERIAL PRIMARY KEY,
+     id_lote INT NOT NULL REFERENCES lote(id_lote),
+    fecha_registro DATE NOT NULL,
+    
+    -- DECIMAL(10,2) significa: hasta 10 dígitos en total, con 2 decimales. 
+    -- Ideal para kilos (ej. 1500.50) y dinero (ej. 350.00)
+    cantidad_obtenida DECIMAL(10, 2) NOT NULL,
+    precio_venta DECIMAL(10, 2) NOT NULL,
+    
+    -- Control para tu arquitectura Offline-First
+    estado_sincronizacion VARCHAR(20) DEFAULT 'SINCRONIZADO',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 -- ============================================
 -- 3. INSERCIÓN DE DATOS DE PRUEBA (SEEDERS)
 -- ============================================
