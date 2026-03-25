@@ -71,45 +71,6 @@ function obtenerIpLan() {
     return candidatas[0].ip;
 }
 
-async function ensureLoteColumns() {
-    try {
-        await pool.query(`
-            ALTER TABLE lote
-            ADD COLUMN IF NOT EXISTS foto_siembra_url VARCHAR(255),
-            ADD COLUMN IF NOT EXISTS foto_cosecha_url VARCHAR(255),
-            ADD COLUMN IF NOT EXISTS ubicacion VARCHAR(200),
-            ADD COLUMN IF NOT EXISTS variedad VARCHAR(100)
-        `);
-        console.log('✅ Esquema lote verificado (columnas opcionales listas)');
-    } catch (error) {
-        console.error('⚠️ No se pudo verificar esquema de lote:', error.message);
-    }
-}
-
-async function ensureProductoCategoriaConstraint() {
-    try {
-        await pool.query(`
-            DO $$
-            BEGIN
-                IF EXISTS (
-                    SELECT 1
-                    FROM information_schema.table_constraints
-                    WHERE table_name = 'producto'
-                      AND constraint_name = 'producto_categoria_check'
-                ) THEN
-                    ALTER TABLE producto DROP CONSTRAINT producto_categoria_check;
-                END IF;
-
-                ALTER TABLE producto
-                ADD CONSTRAINT producto_categoria_check
-                CHECK (categoria IN ('Grano', 'Tuberculo', 'Hortaliza', 'Forraje', 'Quinua', 'Hortalizas'));
-            END $$;
-        `);
-        console.log('✅ Constraint producto_categoria_check verificado (incluye Quinua y Hortalizas)');
-    } catch (error) {
-        console.error('⚠️ No se pudo verificar constraint de categoría en producto:', error.message);
-    }
-}
 
 // Iniciar el servidor
 app.listen(PORT, HOST, () => {
@@ -117,8 +78,6 @@ app.listen(PORT, HOST, () => {
     console.log(`🚀 Servidor activo en el puerto ${PORT}`);
     console.log(`📍 http://localhost:${PORT}`);
     console.log(`📱 LAN móvil: http://${ipLan}:${PORT}`);
-    ensureLoteColumns();
-    ensureProductoCategoriaConstraint();
 });
 
 // Manejo de cierre graceful

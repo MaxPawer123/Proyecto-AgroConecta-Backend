@@ -46,6 +46,17 @@ app.use('/api/produccion', produccionRoutes);
 
 app.use((error, req, res, next) => {
     if (!error) return next();
+
+    const mensaje = error?.message || '';
+    if (mensaje.includes('Request aborted')) {
+        console.warn('Solicitud cancelada por el cliente durante upload:', mensaje);
+        if (res.headersSent) return;
+        return res.status(499).json({
+            success: false,
+            message: 'Solicitud cancelada por el cliente',
+        });
+    }
+
     console.error('Error no controlado en API:', error);
     return res.status(400).json({
         success: false,
