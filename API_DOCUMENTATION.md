@@ -314,7 +314,7 @@ GET /api/productos/stats
     {
       "id_producto": 1,
       "nombre": "Quinua Real",
-      "categoria": "Grano",
+      "categoria": "Quinua",
       "unidad_medida_base": "Kg",
       "total_lotes": "5",
       "superficie_total": "12.50"
@@ -322,7 +322,7 @@ GET /api/productos/stats
     {
       "id_producto": 2,
       "nombre": "Papa Imilla",
-      "categoria": "Tuberculo",
+      "categoria": "Hortaliza",
       "unidad_medida_base": "Kg",
       "total_lotes": "2",
       "superficie_total": "3.80"
@@ -389,11 +389,6 @@ GET /api/gastos/lote/2/resumen
 
 ---
 
-## 🧪 COLECCIÓN DE PRUEBAS (Postman/Thunder Client)
-
-Importa el archivo `thunder-collection_agroconecta.json` en Thunder Client para tener todas las peticiones listas.
-
----
 
 ## 📝 NOTAS IMPORTANTES
 
