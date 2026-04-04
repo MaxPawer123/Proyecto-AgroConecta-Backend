@@ -8,6 +8,7 @@ const loteRoutes = require('./routes/loteRoutes');
 const costoRoutes = require('./routes/costoRoutes');
 const productoRoutes = require('./routes/productoRoutes');
 const produccionRoutes = require('./routes/produccionRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.get('/', (req, res) => {
         message: 'Bienvenido a la API de AgroConecta',
         version: '1.0.0',
         endpoints: {
+            auth: '/api/auth',
             lotes: '/api/lotes',
             gastos: '/api/gastos',
             productos: '/api/productos',
@@ -40,6 +42,7 @@ app.get('/', (req, res) => {
 
 // Registrar las rutas de la API
 app.use('/api/lotes', loteRoutes);
+app.use('/api/auth', authRoutes);
 app.use('/api/gastos', costoRoutes);
 app.use('/api/productos', productoRoutes);
 app.use('/api/produccion', produccionRoutes);

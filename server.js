@@ -1,6 +1,7 @@
 require('dotenv').config();
 const app = require('./src/app');
 const pool = require('./src/config/db');
+const initializeDatabase = require('./src/config/initDb');
 const os = require('os');
 
 // Puerto del servidor
@@ -72,13 +73,25 @@ function obtenerIpLan() {
 }
 
 
+async function startServer() {
+    try {
+        await initializeDatabase();
+        console.log('Esquema de base de datos verificado/inicializado');
+
+        app.listen(PORT, HOST, () => {
+            const ipLan = obtenerIpLan();
+            console.log(` Servidor activo en el puerto ${PORT}`);
+            console.log(` http://localhost:${PORT}`);
+            console.log(` LAN móvil: http://${ipLan}:${PORT}`);
+        });
+    } catch (error) {
+        console.error('No se pudo inicializar la base de datos:', error.message);
+        process.exit(1);
+    }
+}
+
 // Iniciar el servidor
-app.listen(PORT, HOST, () => {
-    const ipLan = obtenerIpLan();
-    console.log(`🚀 Servidor activo en el puerto ${PORT}`);
-    console.log(`📍 http://localhost:${PORT}`);
-    console.log(`📱 LAN móvil: http://${ipLan}:${PORT}`);
-});
+startServer();
 
 // Manejo de cierre graceful
 process.on('SIGTERM', () => {

@@ -9,12 +9,10 @@ const LoteController = {
                     message: 'No se recibio ninguna imagen en el campo foto.'
                 });
             }
-
             const host = req.get('host');
             const protocolo = req.protocol;
             const rutaPublica = `/uploads/lotes/${req.file.filename}`;
             const urlPublica = `${protocolo}://${host}${rutaPublica}`;
-
             return res.status(201).json({
                 success: true,
                 message: 'Imagen subida correctamente',
@@ -124,6 +122,13 @@ const LoteController = {
                 data: nuevoLote
             });
         } catch (error) {
+            if (error.code === '23503' && error.constraint === 'lote_id_productor_fkey') {
+                return res.status(400).json({
+                    success: false,
+                    message: 'El productor seleccionado no existe. Registra o selecciona un productor válido antes de crear el lote.',
+                });
+            }
+
             console.error('Error al crear el lote:', error);
             res.status(500).json({
                 success: false,
